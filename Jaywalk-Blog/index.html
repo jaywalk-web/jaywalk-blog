@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Jaywalk</title>
+    <style>
+        /* Updated color scheme */
+        :root {
+            --primary-red: #cd3b26;
+            --dark-red: #a82c1a;
+            --light-red: #fdf2f0;
+            --background: #fcf5f5;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --card-bg: #ffffff;
+            --footer-dark: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--background);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-red) var(--background);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--background);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-red);
+        }
+        
+        /* Header */
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            text-decoration: none;
+        }
+        
+        /* Desktop Navigation */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-red);
+        }
+        
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: color 0.3s ease;
+        }
+        
+        .dropdown-toggle:hover {
+            color: var(--primary-red);
+        }
+        
+        .dropdown-arrow {
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-menu a:hover {
+            background: var(--light-red);
+            color: var(--primary-red);
+        }
+        
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+        
+        /* Auth Buttons - Clean and normal */
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-left: 1rem;
+        }
+        
+        .auth-btn {
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            display: inline-block;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            padding: 0.5rem 0;
+        }
+        
+        .auth-btn:hover {
+            color: var(--primary-red);
+        }
+        
+        /* Burger Menu - Fixed spacing and overflow */
+        .burger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .burger-line {
+            width: 20px;
+            height: 2px;
+            background: var(--text-dark);
+            border-radius: 1px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+            margin: 2px 0;
+        }
+        
+        /* Burger Animation - Clean X without overflow */
+        .burger.active .burger-line:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+            background: var(--primary-red);
+        }
+        
+        .burger.active .burger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .burger.active .burger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(4px, -4px);
+            background: var(--primary-red);
+        }
+        
+        /* Mobile Navigation - Fixed spacing */
+        @media (max-width: 768px) {
+            .burger {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--card-bg);
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: flex-start;
+                gap: 0.5rem;
+                padding: 80px 1.5rem 2rem;
+                transition: right 0.4s ease-in-out;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                z-index: 999;
+                overflow-y: auto;
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-links a {
+                padding: 0.8rem 0;
+                width: 100%;
+                text-align: left;
+                font-size: 1.1rem;
+                border-bottom: none;
+            }
+            
+            .dropdown-toggle {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 0.8rem 0;
+                border-bottom: none;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                display: none;
+                width: 100%;
+                background: var(--card-bg);
+                border-radius: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .dropdown.active .dropdown-menu {
+                display: block;
+            }
+            
+            .dropdown.active .dropdown-arrow {
+                transform: rotate(180deg);
+            }
+            
+            .auth-buttons {
+                margin-left: 0;
+                margin-top: 1.5rem;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.8rem;
+            }
+            
+            .auth-btn {
+                text-align: left;
+                width: 100%;
+                padding: 0.8rem 0;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Blog Grid */
+        .blog-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .blog-header h1 {
+            font-size: 3rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .blog-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+        
+        /* Content Pillars Filter */
+        .pillars-filter {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .pillar-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pillar-btn:hover {
+            background: var(--light-red);
+            color: var(--primary-red);
+        }
+        
+        .pillar-btn.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .post {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            opacity: 1;
+        }
+        
+        .post.hidden {
+            display: none;
+        }
+        
+        .post.fade-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(205, 59, 38, 0.15);
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .post:hover .post-image {
+            transform: scale(1.05);
+        }
+        
+        .post-content {
+            padding: 1.5rem;
+        }
+        
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        /* Content Pillar Badge Only */
+        .post-pillar {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .pillar-action {
+            background: #e8f4fd;
+            color: #1e88e5;
+            border: 1px solid #bbdefb;
+        }
+        
+        .pillar-community {
+            background: #f3e5f5;
+            color: #8e24aa;
+            border: 1px solid #e1bee7;
+        }
+        
+        .pillar-education {
+            background: #e8f5e8;
+            color: #43a047;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .post h2 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+        
+        .post h2 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .post h2 a:hover {
+            color: var(--primary-red);
+        }
+        
+        .post-excerpt {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .read-more {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .read-more:hover {
+            color: var(--dark-red);
+            gap: 0.7rem;
+        }
+        
+        /* Load More Button - Centered properly */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 3rem 0;
+            width: 100%;
+        }
+        
+        .load-more {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 0.8rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            min-width: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .load-more:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(205, 59, 38, 0.3);
+        }
+        
+        .load-more:active {
+            transform: translateY(0);
+        }
+        
+        /* Back to Top Button - Different arrow */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-red);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(205, 59, 38, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 99;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background: var(--dark-red);
+            transform: translateY(-3px);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--footer-dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: var(--light-red);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem 1.5rem;
+            }
+            
+            .blog-grid {
+                padding: 1rem;
+            }
+            
+            .pillars-filter {
+                gap: 0.5rem;
+            }
+            
+            .pillar-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .blog-header h1 {
+                font-size: 2rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .back-to-top {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <a href="https://jaywalkapp.org" class="logo">Jaywalk</a>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="https://jaywalkapp.org">Home</a>
+                
+                <div class="dropdown" id="aboutDropdown">
+                    <div class="dropdown-toggle">
+                        About Us <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="https://jaywalkapp.org/safety">App Safety & Security</a>
+                        <a href="https://jaywalkapp.org/activism">Approach to Activism & Causes</a>
+                    </div>
+                </div>
+                
+                <a href="https://jaywalkapp.org/organize">Organize</a>
+                <a href="https://jaywalkapp.org/disclaimer">Disclaimer</a>
+                <a href="/">Blog</a>
+                <a href="https://jaywalk.org/login"> Login </a>
+                <a href="https://jaywalk.org/signup"> Sign Up </a>
+            </div>
+            
+            <button class="burger" id="burgerMenu">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="blog-grid">
+        <div class="blog-header">
+            <h1>Jaywalk Blog</h1>
+            <p>Thoughts on urban mobility, technology, and making cities better</p>
+        </div>
+
+        <!-- Content Pillars Filter -->
+        <div class="pillars-filter" id="pillarsFilter">
+            <button class="pillar-btn active" data-pillar="all">All</button>
+            <button class="pillar-btn" data-pillar="action">Action</button>
+            <button class="pillar-btn" data-pillar="community">Community</button>
+            <button class="pillar-btn" data-pillar="education">Education</button>
+        </div>
+
+        <div class="posts-grid" id="postsGrid">
+            <!-- Blog posts will be loaded here -->
+        </div>
+
+        <div class="load-more-container">
+            <button class="load-more" id="loadMore">Load More Articles</button>
+        </div>
+    </main>
+
+    <!-- Back to Top Button with different arrow -->
+    <button class="back-to-top" id="backToTop">▲</button>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://jaywalkapp.org">Home</a>
+                <a href="https://jaywalkapp.org/about">About Us</a>
+                <a href="https://jaywalkapp.org/organize">Organize</a>
+                <a href="https://jaywalkapp.org/disclaimer">Disclaimer</a>
+                <a href="/">Blog</a>
+                <a href="https://jaywalkapp.org/privacy">Privacy</a>
+                <a href="https://jaywalkapp.org/terms">Terms</a>
+                <a href="https://jaywalkapp.org/contact">Contact</a>
+            </div>
+            <p>&copy; 2024 Jaywalk App. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Burger menu functionality - mobile only
+        const burgerMenu = document.getElementById('burgerMenu');
+        const navLinks = document.getElementById('navLinks');
+        const aboutDropdown = document.getElementById('aboutDropdown');
+
+        function toggleMenu() {
+            const isActive = navLinks.classList.toggle('active');
+            burgerMenu.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = isActive ? 'hidden' : '';
+        }
+
+        // Close menu function
+        function closeMenu() {
+            navLinks.classList.remove('active');
+            burgerMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Toggle dropdown on mobile
+        aboutDropdown.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.toggle('active');
+            }
+        });
+
+        burgerMenu.addEventListener('click', toggleMenu);
+
+        // Close menu when clicking on links (mobile)
+        const navItems = navLinks.querySelectorAll('a');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768 && navLinks.classList.contains('active')) {
+                    closeMenu();
+                }
+            });
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                closeMenu();
+            }
+        });
+
+        // Close menu when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && 
+                navLinks.classList.contains('active') && 
+                !navLinks.contains(e.target) && 
+                !burgerMenu.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        // Blog posts data
+        const blogPosts = [
+            {
+                title: "The Future of Pedestrian Safety in Smart Cities",
+                excerpt: "Exploring how technology and data can work together to create safer walking environments in our increasingly connected urban landscapes.",
+                image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "May 15, 2024",
+                pillar: "education"
+            },
+            {
+                title: "How AI is Revolutionizing Crosswalk Detection",
+                excerpt: "A deep dive into the machine learning models that power modern pedestrian safety systems.",
+                image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "May 10, 2024",
+                pillar: "action"
+            },
+            {
+                title: "Reducing Pedestrian Accidents by 40%: Portland's Success Story",
+                excerpt: "How one city combined technology and public awareness to improve pedestrian safety.",
+                image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "May 5, 2024",
+                pillar: "action"
+            },
+            {
+                title: "Building Safer Neighborhoods Through Community Engagement",
+                excerpt: "Community-driven approaches to pedestrian safety that empower local residents.",
+                image: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "April 28, 2024",
+                pillar: "community"
+            },
+            {
+                title: "Next-Gen Safety Tech for Urban Mobility",
+                excerpt: "Emerging technologies shaping the future of pedestrian safety and urban mobility.",
+                image: "https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "April 20, 2024",
+                pillar: "action"
+            },
+            {
+                title: "The Psychology of Urban Walking Behavior",
+                excerpt: "Understanding how pedestrians make decisions in complex urban environments.",
+                image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                date: "April 15, 2024",
+                pillar: "education"
+            }
+        ];
+
+        // Blog grid and load more functionality
+        const postsGrid = document.getElementById('postsGrid');
+        const loadMoreBtn = document.getElementById('loadMore');
+        const pillarsFilter = document.getElementById('pillarsFilter');
+        let visiblePosts = 6;
+        let currentPillar = 'all';
+        let filteredPosts = [...blogPosts];
+
+        // Function to filter posts by pillar
+        function filterPosts(pillar) {
+            currentPillar = pillar;
+            
+            if (pillar === 'all') {
+                filteredPosts = [...blogPosts];
+            } else {
+                filteredPosts = blogPosts.filter(post => post.pillar === pillar);
+            }
+            
+            // Reset visible posts count when filter changes
+            visiblePosts = 6;
+            
+            // Update active filter button
+            document.querySelectorAll('.pillar-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.pillar-btn[data-pillar="${pillar}"]`).classList.add('active');
+            
+            // Render posts
+            renderPosts();
+        }
+
+        // Function to render posts with animation
+        function renderPosts() {
+            const postsToShow = filteredPosts.slice(0, visiblePosts);
+            
+            // Clear grid
+            postsGrid.innerHTML = '';
+            
+            // Add posts with fade-in animation
+            postsToShow.forEach((post, index) => {
+                const postElement = document.createElement('article');
+                postElement.className = 'post fade-in';
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.title}" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span>${post.date}</span>
+                            <span class="post-pillar pillar-${post.pillar}">${post.pillar}</span>
+                        </div>
+                        <h2><a href="#">${post.title}</a></h2>
+                        <p class="post-excerpt">${post.excerpt}</p>
+                        <a href="#" class="read-more">Read more →</a>
+                    </div>
+                `;
+                postsGrid.appendChild(postElement);
+                
+                // Stagger animation for visual appeal
+                setTimeout(() => {
+                    postElement.classList.remove('fade-in');
+                }, index * 100);
+            });
+
+            // Show/hide load more button
+            loadMoreBtn.style.display = visiblePosts >= filteredPosts.length ? 'none' : 'block';
+        }
+
+        // Function to load more posts with animation
+        function loadMorePosts() {
+            visiblePosts += 3;
+            renderPosts();
+            
+            // Smooth scroll to the newly loaded posts
+            setTimeout(() => {
+                const newPosts = document.querySelectorAll('.post');
+                if (newPosts.length > 0) {
+                    const lastPost = newPosts[newPosts.length - 1];
+                    lastPost.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 300);
+        }
+
+        // Event listeners
+        loadMoreBtn.addEventListener('click', loadMorePosts);
+        
+        // Add event listeners to pillar filter buttons
+        document.querySelectorAll('.pillar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const pillar = btn.getAttribute('data-pillar');
+                filterPosts(pillar);
+            });
+        });
+
+        // Initial render
+        renderPosts();
+
+        // Back to Top Button
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        console.log('Jaywalk Blog - Content pillars only as badges');
+		
+
+// This loads blog posts from CMS
+fetch('/posts.json')
+  .then(response => response.json())
+  .then(posts => {
+    const container = document.querySelector('.posts-grid');
+    if (!container) return;
+    
+    posts.forEach(post => {
+      const postHTML = `
+        <article class="post">
+          <img src="${post.image}" alt="${post.image_alt}" class="post-image">
+          <div class="post-content">
+            <div class="post-meta">
+              <span>${new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              <span class="post-pillar pillar-${post.pillar}">${post.pillar}</span>
+            </div>
+            <h2><a href="/post.html?post=${post.slug}">${post.title}</a></h2>
+            <p class="post-excerpt">${post.excerpt}</p>
+            <a href="/post.html?post=${post.slug}" class="read-more">Read more →</a>
+          </div>
+        </article>
+      `;
+      container.innerHTML += postHTML;
+    });
+  })
+  .catch(error => console.log('Posts will appear when you add them via CMS'));
+
+    </script>
+</body>
+</html>

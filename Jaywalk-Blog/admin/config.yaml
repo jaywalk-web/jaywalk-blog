@@ -1,0 +1,26 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "posts"
+    label: "Blog Posts"
+    folder: "posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - label: "Content Pillar"
+        name: "pillar"
+        widget: "select"
+        options: ["action", "community", "education"]
+        default: "education"
+      - {label: "Featured Image", name: "image", widget: "image"}
+      - {label: "Image Alt Text", name: "image_alt", widget: "string"}
+      - {label: "Excerpt", name: "excerpt", widget: "text"}
+      - {label: "Reading Time", name: "read_time", widget: "string", default: "5 min read"}
+      - {label: "Body", name: "body", widget: "markdown"}

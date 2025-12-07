@@ -1,0 +1,11 @@
+[
+  {
+    "title": "Welcome to Jaywalk Blog",
+    "date": "2024-01-01",
+    "pillar": "education",
+    "image": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "image_alt": "Smart city",
+    "excerpt": "This is a sample post. Create your own in the CMS!",
+    "slug": "welcome-to-jaywalk-blog"
+  }
+]
